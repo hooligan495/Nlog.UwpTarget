@@ -76,12 +76,10 @@ namespace NLog.Uwp.Tests.Target
             }
 
         }
-
-
+        
         [Fact]
         public void SimpleFileTest()
         {
-//            var logFile = "C:\\Temp\\randomfile.txt";
             var logFile = Path.GetTempFileName();
             try
             {
@@ -106,6 +104,43 @@ namespace NLog.Uwp.Tests.Target
                 if (File.Exists(logFile))
                     File.Delete(logFile);
             }
+
+        }
+
+        [Fact]
+        public void SetupNLogWithUwpTarget()
+        {
+
+            try
+            {
+
+                const string LoggerConfig = @"
+                <nlog>
+                    <extensions>
+                      <add assembly='UwpTarget'/>
+                    </extensions>
+                    <targets><target name='UwpFileTest' type='UwpFile' fileName='c:/Temp/sample.txt' layout='${message}'/></targets>
+                    <rules>
+                        <logger name='*' minlevel='Trace' writeTo='UwpFileTest'/>
+                    </rules>
+                </nlog>";
+
+                LogManager.Configuration = XmlLoggingConfiguration.CreateFromXmlString(LoggerConfig);
+                ILogger loggerA = LogManager.GetLogger("UwpFileLoggingTest");
+                loggerA.Trace("Test");
+                // The starting state for logging is enable.
+                Assert.True(LogManager.IsLoggingEnabled());
+                LogManager.Shutdown();
+
+                AssertUwpFileContents(@"c:\Temp\sample.txt", $"Test{Environment.NewLine}", Encoding.UTF8, false);
+            }
+            finally
+            {
+                if (File.Exists(@"c:\Temp\sample.txt"))
+                    File.Delete(@"c:\Temp\sample.txt");
+
+            }
+
 
         }
     }

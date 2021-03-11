@@ -185,7 +185,7 @@ namespace NLog.UnitTests
             }
 
             byte[] buf;
-            using (var fs = fileSystem.OpenFileStream(fileName))// new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete)))
+            using (var fs = fileSystem.OpenFileStream(fileName))
             {
                 int index = 0;
                 int count = (int)fs.Length;
