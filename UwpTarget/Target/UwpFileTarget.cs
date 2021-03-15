@@ -76,6 +76,33 @@ namespace NLog.Uwp.Target
         /// </summary>
         public Encoding Encoding { get; set; } = System.Text.Encoding.UTF8;
 
+        /// <summary>
+        /// Archive File Name pattern
+        /// </summary>
+        public Layout ArchiveFileName
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Archive every time block
+        /// </summary>
+        public FileArchivePeriod ArchiveEvery { get; set; }
+
+        /// <summary>
+        /// Gets or sets the way the files are numbered
+        /// </summary>
+        public ArchiveNumberingMode ArchiveNumbering { get; set; }
+
+        /// <summary>
+        /// Max number of files to keep
+        /// </summary>
+        [DefaultValue(0)]
+        public int MaxArchiveFiles { get; set; }
+
+
+
         private string _currentFileName;
         private Stream _currentFileStream;
 
@@ -150,7 +177,6 @@ namespace NLog.Uwp.Target
 
         }
 
-
         private Stream GetFileStream(string fileName)
         {
             var fileStream = _currentFileStream;
@@ -162,6 +188,11 @@ namespace NLog.Uwp.Target
                 _currentFileName = fileName;
             }
             return fileStream;
+        }
+
+        private void ArchiveFileMove(string fileName, string archiveFileName)
+        {
+
         }
     }
 }

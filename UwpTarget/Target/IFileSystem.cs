@@ -58,7 +58,6 @@ namespace NLog.Targets
         /// <returns></returns>
         Stream OpenFileStream(string name);
 
-
         /// <summary>
         /// Test for the existence of a file (full path name)
         /// </summary>
