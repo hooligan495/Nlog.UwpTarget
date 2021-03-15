@@ -27,7 +27,7 @@
 
 namespace NLog.Uwp.Target.Streams
 {
-    interface IFileStreamCache
+    public interface IFileStreamCache
     {
         /// <summary>
         /// Gets the file stream factory used by all the appenders in this list.

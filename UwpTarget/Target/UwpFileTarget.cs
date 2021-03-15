@@ -26,9 +26,11 @@
 //  SUBSTITUTE GOODS OR SERVICES
 
 
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using NLog.Config;
 
 namespace NLog.Uwp.Target
 {
@@ -59,7 +61,7 @@ namespace NLog.Uwp.Target
         /// File Target for running on UWP platform taking a file stream cache
         /// </summary>
         /// <param name="cache"></param>
-        public UwpFileTarget(FileStreamCache cache)
+        public UwpFileTarget(IFileStreamCache cache)
         {
             _fileStreamCache = cache;
         }
@@ -78,13 +80,29 @@ namespace NLog.Uwp.Target
         private Stream _currentFileStream;
 
 
+        [DefaultValue(false)]
+        [Advanced]
+        public bool TestFactory { get; set; }
+
+        private IFileStreamFactory GetFileStreamFactory()
+        {
+            if (TestFactory)
+            {
+                return _fileStreamCache.Factory;
+            }
+            else
+            {
+                return new FileStreamFactory();
+            }
+        }
+
         /// <summary>
         /// Setup the target
         /// </summary>
         protected override void InitializeTarget()
         {
             base.InitializeTarget();
-            _fileStreamCache = new FileStreamCache(1, new FileStreamFactory());
+            _fileStreamCache = new FileStreamCache(1, GetFileStreamFactory());
         }
 
         /// <summary>
@@ -96,13 +114,7 @@ namespace NLog.Uwp.Target
             string fileContent = RenderLogEvent(this.Layout, logEvent);
             string fileName = RenderLogEvent(this.FileName, logEvent);
 
-            var fileStream = GetFileStream(fileName);
-
-            var nl = Encoding.GetBytes(Environment.NewLine);
-            var bytes = Encoding.GetBytes(fileContent);
-            var bytes1 = bytes.Concat(nl).ToArray();
-            fileStream.Write(bytes1, 0, bytes1.Length);
-            fileStream.Flush();
+            WriteToFile(fileContent, fileName);
         }
 
         /// <summary>
@@ -115,7 +127,31 @@ namespace NLog.Uwp.Target
             _currentFileStream = null;
         }
 
-        Stream GetFileStream(string fileName)
+        private void WriteToFile(string fileContent, string fileName, bool firstAttempt = true)
+        {
+
+            try
+            {
+                var fileStream = GetFileStream(fileName);
+                var nl = Encoding.GetBytes(Environment.NewLine);
+                var bytes = Encoding.GetBytes(fileContent);
+                fileStream.Write(bytes, 0, bytes.Length);
+                fileStream.Write(nl, 0, nl.Length);
+                fileStream.Flush();
+            }
+            catch (Exception e)
+            {
+                _currentFileName = null;
+                _currentFileStream?.Dispose();
+                if (!firstAttempt)
+                    throw;
+                WriteToFile(fileContent, fileName, false);
+            }
+
+        }
+
+
+        private Stream GetFileStream(string fileName)
         {
             var fileStream = _currentFileStream;
             if (_currentFileName != fileName)

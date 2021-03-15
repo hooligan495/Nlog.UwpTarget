@@ -29,11 +29,14 @@
 using System;
 using System.IO;
 using System.Text;
+using Windows.Foundation.Collections;
+using Moq;
 using NLog.Config;
 using NLog.Layouts;
 using NLog.Targets;
 using NLog.UnitTests;
 using NLog.Uwp.Target;
+using NLog.Uwp.Target.Streams;
 using Xunit;
 
 namespace NLog.Uwp.Tests.Target
@@ -76,7 +79,44 @@ namespace NLog.Uwp.Tests.Target
             }
 
         }
-        
+
+        [Fact]
+        public void WriteExceptionTest()
+        {
+            Mock<IFileStreamCache> cache = new Mock<IFileStreamCache>();
+            Mock<IFileStreamFactory> factory = new Mock<IFileStreamFactory>();
+
+            cache.SetupGet(m => m.Factory).Returns(factory.Object);
+
+            Mock<Stream> stream = new Mock<Stream>();
+
+            factory.Setup(fact => fact.Open(@"C:\temp\foo.txt")).Returns(stream.Object);
+            stream.Setup(stm => stm.Write(It.IsAny<byte[]>(), It.IsAny<int>(), It.IsAny<int>())).Throws(new Exception());
+            stream.Setup(stm => stm.Flush());
+
+            try
+            {
+                var fileTarget = new UwpFileTarget(cache.Object)
+                {
+                    FileName = @"C:\temp\foo.txt",
+                    Layout = "${level} ${message}",
+                    TestFactory = true,
+                };
+
+                SimpleConfigurator.ConfigureForTargetLogging(fileTarget, LogLevel.Debug);
+                logger.Debug("aaa");
+                LogManager.Configuration = null; // Flush
+
+            }
+            catch (Exception e)
+            {
+
+            }
+
+            stream.Verify(stm => stm.Flush(), Times.Never);
+            stream.Verify(stm=>stm.Write(It.IsAny<byte[]>(), It.IsAny<int>(), It.IsAny<int>()), Times.Exactly(2));
+        }
+
         [Fact]
         public void SimpleFileTest()
         {
@@ -97,7 +137,7 @@ namespace NLog.Uwp.Tests.Target
 
                 LogManager.Configuration = null; // Flush
 
-               AssertFileContents(logFile, $"Debug aaa{Environment.NewLine}Info bbb{Environment.NewLine}Warn ccc{Environment.NewLine}", Encoding.UTF8);
+                AssertFileContents(logFile, $"Debug aaa{Environment.NewLine}Info bbb{Environment.NewLine}Warn ccc{Environment.NewLine}", Encoding.UTF8);
             }
             finally
             {
@@ -140,8 +180,6 @@ namespace NLog.Uwp.Tests.Target
                     File.Delete(@"c:\Temp\sample.txt");
 
             }
-
-
         }
     }
 }

@@ -26,6 +26,7 @@
     <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\UwpTarget.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -136,6 +137,11 @@
     </PackageReference>
     <PackageReference Include="NLog">
       <Version>4.7.8</Version>
+    </PackageReference>
+    <PackageReference Include="NuGet.CommandLine">
+      <Version>5.8.1</Version>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
   <ItemGroup />
