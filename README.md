@@ -5,8 +5,8 @@ If you are using NLog in a UWP client, you can only write logs to the sandbox yo
 
 # TODO
 + Complete unimplemented methods
++ Documentation
 + Get naming consistent
 + Create a nuget package
 + More unit tests
-+ Rolling log file implementation
 + Remove or use FileStreamCache concept it was from an earlier discussion and if we need to support metadata with a stream it could be useful
