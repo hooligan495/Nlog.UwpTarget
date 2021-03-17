@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.AI.MachineLearning;
 using Windows.Storage;
@@ -32,10 +33,7 @@ namespace NLog.Targets
         {
             var path = Path.GetDirectoryName(name);
             var filename = Path.GetFileName(name);
-            var task = StorageFolder.GetFolderFromPathAsync(path).AsTask();
-            Task.WhenAll(task);
-
-            var folder = task.Result;
+            var folder = CreateDirectoryIfNotExist(path);
             
             var f = folder.CreateFileAsync(filename, CreationCollisionOption.OpenIfExists).AsTask();
             Task.WhenAll(f);
@@ -48,6 +46,65 @@ namespace NLog.Targets
             return streamNewFile.AsStream();
         }
 
+        public StorageFolder CreateDirectoryIfNotExist(string path)
+        {
+            StorageFolder folder = null;
+            var name = Path.GetDirectoryName(path);
+            try
+            {
+                var task = StorageFolder.GetFolderFromPathAsync(name).AsTask();
+                Task.WhenAll(task);
+                folder = task.Result;
+
+                return folder;
+            }
+            catch (AggregateException ag)
+            {
+                ag.Handle(ex =>
+                {
+                    if (ex is FileNotFoundException)
+                    {
+                        folder = CreateDirectory(name);
+                    }
+                    return ex is FileNotFoundException;
+                });
+            }
+
+            return folder;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public StorageFolder CreateDirectory(string name)
+        {
+            var items = name.Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries);
+
+            StorageFolder prevFolder = null;
+            var task = StorageFolder.GetFolderFromPathAsync(items[0]).AsTask();
+            Task.WhenAll(task);
+            prevFolder = task.Result;
+
+            for (int i = 1; i < items.Length; i++)
+            {
+                try
+                {
+                    var task1 = prevFolder.GetFolderAsync(items[i]).AsTask();
+                    Task.WhenAll(task);
+                    var folder = task1.Result;
+                    prevFolder = folder;
+                }
+                catch
+                {
+                    var task1 = prevFolder.CreateFolderAsync(items[i]).AsTask();
+                    Task.WhenAll(task1);
+                    prevFolder = task1.Result;
+                }
+            }
+            return prevFolder;
+        }
 
         public bool FileExists(string name)
         {

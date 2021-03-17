@@ -2,6 +2,25 @@
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
+    <Title>NLog UWP Target</Title>
+    <Company>NLog</Company>
+    <Description>NLog UwpTarget - Allow broadfilesystemAccess in a UWP applciation</Description>
+    <Product>UwpTarget</Product>
+    <Authors>Jay McGaffigan;Rolf</Authors>
+    <CurrentYear>$([System.DateTime]::Now.ToString(yyyy))</CurrentYear>
+    <Copyright>Copyright (c) 2004-$(CurrentYear) NLog Project - https://nlog-project.org/ </Copyright>
+    <PackageReleaseNotes>
+      Docs:
+      https://github.com/NLog/NLog/wiki/MSMQ-target
+    </PackageReleaseNotes>
+    <PackageTags>NLog;UwpTarget;logging;log</PackageTags>
+    <PackageIcon>N.png</PackageIcon>
+    <PackageProjectUrl>https://nlog-project.org/</PackageProjectUrl>
+    <PackageLicenseExpression>BSD-3-Clause</PackageLicenseExpression>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/hooligan495/Nlog.UwpTarget</RepositoryUrl>
+  </PropertyGroup>
+  <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{9089964B-6643-4DD2-BC63-7B86971938FF}</ProjectGuid>

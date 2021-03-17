@@ -6,9 +6,9 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("UwpTarget")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("UwpFileTarget for writing outside the UWP sandbox")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("NLog")]
 [assembly: AssemblyProduct("UwpTarget")]
 [assembly: AssemblyCopyright("Copyright ©  2021")]
 [assembly: AssemblyTrademark("")]
