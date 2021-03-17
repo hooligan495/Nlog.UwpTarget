@@ -49,10 +49,9 @@ namespace NLog.Targets
         public StorageFolder CreateDirectoryIfNotExist(string path)
         {
             StorageFolder folder = null;
-            var name = Path.GetDirectoryName(path);
             try
             {
-                var task = StorageFolder.GetFolderFromPathAsync(name).AsTask();
+                var task = StorageFolder.GetFolderFromPathAsync(path).AsTask();
                 Task.WhenAll(task);
                 folder = task.Result;
 
@@ -64,7 +63,7 @@ namespace NLog.Targets
                 {
                     if (ex is FileNotFoundException)
                     {
-                        folder = CreateDirectory(name);
+                        folder = CreateDirectory(path);
                     }
                     return ex is FileNotFoundException;
                 });
