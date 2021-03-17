@@ -6,6 +6,7 @@ If you are using NLog in a UWP client, you can only write logs to the sandbox yo
 # TODO
 + Complete unimplemented methods
 + Documentation
++ Look at AsyncTarget - Not sure if we could work with taht.  Right now I've blocked off some of the await calls in the UwpFileSystem class.
 + Get naming consistent
 + Create a nuget package
 + More unit tests
